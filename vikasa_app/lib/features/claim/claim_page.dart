@@ -5,6 +5,7 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../utils/decimal_utils.dart';
 import 'history_page.dart';
+import '../withdraw/withdraw_page.dart';
 
 class ClaimPage extends StatefulWidget {
   const ClaimPage({super.key});
@@ -191,6 +192,15 @@ class _ClaimPageState extends State<ClaimPage> {
             },
             icon: const Icon(Icons.history),
             tooltip: 'History',
+          ),
+          IconButton(
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (_) => const WithdrawPage()),
+              );
+            },
+            icon: const Icon(Icons.account_balance_wallet),
+            tooltip: 'Withdraw',
           ),
           IconButton(
             onPressed: () async {
