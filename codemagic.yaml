@@ -1,0 +1,148 @@
+# Codemagic configuration for VIKASA
+# Docs: https://docs.codemagic.io/yaml/yaml-getting-started/
+
+workflows:
+  pr_android_debug:
+    name: PR Android Debug
+    max_build_duration: 60
+    triggering:
+      events:
+        - pull_request
+      branch_patterns:
+        - pattern: develop
+          include: true
+      cancel_previous_builds: true
+    environment:
+      flutter: stable
+      vars:
+        # App config (override in Codemagic UI if needed)
+        APP_PACKAGE_ID: com.vikasa.app
+        # Backend/env (configure in Codemagic as secure environment variables)
+        SUPABASE_URL: $SUPABASE_URL
+        SUPABASE_ANON_KEY: $SUPABASE_ANON_KEY
+        ADMOB_APP_ID_ANDROID: $ADMOB_APP_ID_ANDROID
+    scripts:
+      - name: Install Flutter deps
+        script: |
+          cd vikasa_app
+          flutter pub get
+      - name: Guard against deprecated withOpacity usage
+        script: |
+          if grep -R "withOpacity\(" -n vikasa_app/lib; then
+            echo "ERROR: Found deprecated withOpacity usage. Use .withValues() instead.";
+            exit 1;
+          else
+            echo "OK: No withOpacity usage found";
+          fi
+      - name: Analyze
+        script: |
+          cd vikasa_app
+          flutter analyze
+      - name: Tests
+        script: |
+          cd vikasa_app
+          flutter test
+      - name: Build Android debug APK
+        script: |
+          cd vikasa_app
+          flutter build apk --debug
+    artifacts:
+      - vikasa_app/build/app/outputs/apk/debug/*.apk
+
+  android_release:
+    name: Android Release (main)
+    max_build_duration: 60
+    triggering:
+      events:
+        - push
+      branch_patterns:
+        - pattern: main
+          include: true
+      cancel_previous_builds: true
+    environment:
+      flutter: stable
+      vars:
+        APP_PACKAGE_ID: com.vikasa.app
+        SUPABASE_URL: $SUPABASE_URL
+        SUPABASE_ANON_KEY: $SUPABASE_ANON_KEY
+        ADMOB_APP_ID_ANDROID: $ADMOB_APP_ID_ANDROID
+      groups:
+        # Optional: configure these groups in Codemagic UI for Play publishing/signing
+        # - google_play
+        # - android_keystore
+        - defaults
+    scripts:
+      - name: Install Flutter deps
+        script: |
+          cd vikasa_app
+          flutter pub get
+      - name: Guard against deprecated withOpacity usage
+        script: |
+          if grep -R "withOpacity\(" -n vikasa_app/lib; then
+            echo "ERROR: Found deprecated withOpacity usage. Use .withValues() instead.";
+            exit 1;
+          else
+            echo "OK: No withOpacity usage found";
+          fi
+      - name: Analyze & Test
+        script: |
+          cd vikasa_app
+          flutter analyze
+          flutter test
+      - name: Build Android release APK (unsigned)
+        script: |
+          cd vikasa_app
+          flutter build apk --release
+      # Add akeystore signing step here if you configure android_keystore group
+      # - name: Sign APK
+      #   script: |
+      #     echo "Signing step (optional)"
+    artifacts:
+      - vikasa_app/build/app/outputs/apk/release/*.apk
+    # Optional publishing to Google Play can be configured here once credentials are set
+
+  ios_release:
+    name: iOS Release (manual signing)
+    max_build_duration: 60
+    triggering:
+      events:
+        - push
+      branch_patterns:
+        - pattern: main
+          include: true
+      cancel_previous_builds: true
+    environment:
+      flutter: stable
+      xcode: latest
+      vars:
+        SUPABASE_URL: $SUPABASE_URL
+        SUPABASE_ANON_KEY: $SUPABASE_ANON_KEY
+        ADMOB_APP_ID_IOS: $ADMOB_APP_ID_IOS
+      groups:
+        # Configure App Store Connect/API key groups in Codemagic UI for signed builds
+        # - app_store_connect
+        - defaults
+    scripts:
+      - name: Install deps
+        script: |
+          cd vikasa_app
+          flutter pub get
+      - name: Guard against deprecated withOpacity usage
+        script: |
+          if grep -R "withOpacity\(" -n vikasa_app/lib; then
+            echo "ERROR: Found deprecated withOpacity usage. Use .withValues() instead.";
+            exit 1;
+          else
+            echo "OK: No withOpacity usage found";
+          fi
+      - name: Analyze & Test
+        script: |
+          cd vikasa_app
+          flutter analyze
+          flutter test
+      - name: Build iOS (no codesign)
+        script: |
+          cd vikasa_app
+          flutter build ipa --no-codesign
+    artifacts:
+      - vikasa_app/build/ios/ipa/*.ipa
