@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../utils/decimal_utils.dart';
+import 'history_page.dart';
 
 class ClaimPage extends StatefulWidget {
   const ClaimPage({super.key});
@@ -182,6 +183,15 @@ class _ClaimPageState extends State<ClaimPage> {
       appBar: AppBar(
         title: const Text('VIKASA'),
         actions: [
+          IconButton(
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (_) => const ClaimHistoryPage()),
+              );
+            },
+            icon: const Icon(Icons.history),
+            tooltip: 'History',
+          ),
           IconButton(
             onPressed: () async {
               try {
