@@ -179,7 +179,21 @@ class _ClaimPageState extends State<ClaimPage> {
             ' (UTC)';
 
     return Scaffold(
-      appBar: AppBar(title: const Text('VIKASA')),
+      appBar: AppBar(
+        title: const Text('VIKASA'),
+        actions: [
+          IconButton(
+            onPressed: () async {
+              try {
+                final supa = Supabase.maybeGetInstance();
+                await supa?.client.auth.signOut();
+              } catch (_) {}
+            },
+            icon: const Icon(Icons.logout),
+            tooltip: 'Logout',
+          ),
+        ],
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(

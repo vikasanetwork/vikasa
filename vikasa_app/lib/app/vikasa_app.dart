@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../theme/theme.dart';
 import '../features/claim/claim_page.dart';
+import '../features/auth/auth_screens.dart';
 
 class VikasaApp extends StatelessWidget {
   const VikasaApp({super.key});
@@ -11,7 +12,7 @@ class VikasaApp extends StatelessWidget {
       title: 'VIKASA',
       debugShowCheckedModeBanner: false,
       theme: buildVikasaTheme(),
-      home: const ClaimPage(),
+      home: const AuthGate(child: ClaimPage()),
     );
   }
 }
