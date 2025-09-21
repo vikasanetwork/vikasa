@@ -1,0 +1,23 @@
+# Ignore environment and local tooling
+.env
+.env.*
+!.env.example
+
+# Supabase local state
+supabase/.branches
+supabase/.temp
+supabase/.env
+
+# Node/build/IDE
+node_modules/
+.DS_Store
+*.log
+.idea/
+.vscode/
+
+# Flutter build artifacts (root)
+build/
+.dart_tool/
+.packages
+.flutter-plugins
+.flutter-plugins-dependencies
