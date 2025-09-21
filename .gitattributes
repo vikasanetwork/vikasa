@@ -1,0 +1,18 @@
+# Normalize line endings and mark common text files
+* text=auto eol=lf
+
+# Treat images/binaries correctly
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.ico binary
+*.pdf binary
+
+# Scripts & YAML as LF
+*.sh text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+*.dart text eol=lf
+*.ts text eol=lf
+*.js text eol=lf
+*.md text eol=lf

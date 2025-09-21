@@ -1,0 +1,43 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, develop, staging ]
+  pull_request:
+    branches: [ main, develop, staging ]
+
+jobs:
+  flutter:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+
+      - name: Install dependencies
+        run: |
+          cd vikasa_app
+          flutter pub get
+
+      - name: Guard against deprecated withOpacity usage
+        run: |
+          if grep -R "withOpacity\(" -n vikasa_app/lib; then
+            echo "ERROR: Found deprecated withOpacity usage. Use .withValues() instead.";
+            exit 1;
+          else
+            echo "OK: No withOpacity usage found";
+          fi
+
+      - name: Analyze
+        run: |
+          cd vikasa_app
+          flutter analyze --no-pub
+
+      - name: Tests
+        run: |
+          cd vikasa_app
+          flutter test --no-pub
