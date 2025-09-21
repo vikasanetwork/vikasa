@@ -70,6 +70,10 @@ flutter:
   # the material Icons class.
   uses-material-design: true
 
+  # App assets (env file for local dev only; don't commit secrets)
+  assets:
+    - assets/env/.env
+
   # To add assets to your application, add an assets section, like this:
   # assets:
   #   - images/a_dot_burr.jpeg
@@ -99,4 +103,4 @@ flutter:
   #         weight: 700
   #
   # For details regarding fonts from package dependencies,
-  # see https://flutter.dev/to/font-from-package
+  # see https://flutter.dev/to/asset-from-package

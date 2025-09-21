@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   // Handle background messages (Android/iOS). Keep minimal.
@@ -24,9 +25,23 @@ class PushService {
     // Get FCM token
     final token = await _messaging.getToken();
 
-    // TODO: send token to Supabase (push_tokens table) after we add table + auth session
-    // For now, just log to console
+    // Upload token to Supabase if logged in and client initialized
     if (token != null) {
+      try {
+        final supa = Supabase.maybeGetInstance();
+        final user = supa?.client.auth.currentUser;
+        if (supa != null && user != null) {
+          final platform = kIsWeb ? 'web' : 'mobile';
+          await supa.client.from('push_tokens').upsert({
+            'user_id': user.id,
+            'token': token,
+            'platform': platform,
+            'updated_at': DateTime.now().toIso8601String(),
+          }, onConflict: 'user_id,token,platform');
+        }
+      } catch (_) {
+        // ignore; token upload is best-effort
+      }
       // ignore: avoid_print
       print('FCM token: ' + token);
     }
