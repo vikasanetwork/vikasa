@@ -17,7 +17,6 @@ ThemeData buildVikasaTheme() {
     colorScheme: scheme.copyWith(
       primary: kGold,
       surface: kSurface,
-      background: kBackground,
     ),
     scaffoldBackgroundColor: kBackground,
     appBarTheme: const AppBarTheme(
